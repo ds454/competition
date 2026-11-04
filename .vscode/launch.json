@@ -14,6 +14,8 @@
                     "--bin=competition"
                 ]
             },
+            "preLaunchTask": "Generate .env",
+            "envFile": "target/.env"
         }
     ]
 }
