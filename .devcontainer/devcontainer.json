@@ -1,28 +1,30 @@
 {
-    "name": "competition-service",
-    "image": "mcr.microsoft.com/devcontainers/rust:2.1.5-1-bookworm",
+    "name": "competition",
+    "image": "mcr.microsoft.com/devcontainers/java:25-bookworm",
     "initializeCommand": "docker network inspect ds454 >nul 2>&1 || docker network create ds454",
     "runArgs": [
         "--network=ds454",
-        "--name=competition-service"
+        "--name=competition"
     ],
     "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/start.sh",
     "appPort": [
         "8084:50051"
     ],
     "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1.10.1": {},
-        "ghcr.io/devcontainers-extra/features/protoc:1.0.3": {
-            "version": "v36.2"
-        }
+        "ghcr.io/devcontainers/features/java:1.8.3": {
+            "version": "25.0.4+1-ms",
+            "installMaven": "true",
+            "mavenVersion": "3.10.0"
+        },
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1.10.1": {}
     },
     "customizations": {
         "vscode": {
             "extensions": [
-                "dustypomerleau.rust-syntax@0.6.1",
-                "rust-lang.rust-analyzer@0.3.3105",
+                "vscjava.vscode-java-pack@0.31.1",
                 "ms-azuretools.vscode-containers@2.5.2",
                 "drblury.protobuf-vsc@1.6.15",
+                "redhat.vscode-xml@0.29.3",
                 "nicolasvuillamy.vscode-groovy-lint@4.2.1"
             ]
         }

@@ -1,0 +1,23 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    // Ignore warnings in generated code
+    "java.diagnostic.filter": [
+        "**/target/**"
+    ],
+    "protobuf.includes": [
+        "${workspaceFolder}/local-dev/proto"
+    ],
+    "[xml]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[groovy]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "files.eol": "\n",
+    "editor.insertSpaces": true,
+    "xml.format.maxLineWidth": 0,
+    "xml.format.splitAttributes": "preserve",
+    "java.compile.nullAnalysis.mode": "automatic"
+}

@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Transpile Protoc",
             "type": "shell",
-            "label": "Generate .env",
-            "command": "mkdir -p target && awk 1 local-dev/env/competition/competition.env local-dev/env/common.env > target/.env"
-        }
+            "command": "mvn protobuf:generate"
+        },
     ]
 }
