@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "ds454.locomotive.userapi.repository")
+@EnableJpaRepositories(basePackages = "ds454.locomotive.competition.repository")
 @EnableTransactionManagement
 public class PersistenceConfig {
 
@@ -68,7 +68,7 @@ public class PersistenceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("ds454.locomotive.userapi.model");
+        em.setPackagesToScan("ds454.locomotive.competition.model");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);

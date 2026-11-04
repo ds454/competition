@@ -1,53 +1,48 @@
 package ds454.locomotive.competition.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
 public class User {
-    @Getter
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String uuid;
 
-    @Getter
-    @Setter
-    @Column(nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String steamid;
 
-    @Getter
-    @Setter
-    private String email;
-    
-    @Getter
-    @Setter
-    private String steamAccountName;
+    @ManyToMany(mappedBy = "competitors")
+    private Set<Competition> competitions = new HashSet<>();
 
-    @Getter
-    @Setter
-    private String steamAccountId;
-    
-    // List of competitions
-    
-    // List of friends
+    protected User() {}
 
-    public User() {
+    public User(String uuid, String steamid) {
+        this.uuid = uuid;
+        this.steamid = steamid;
     }
 
-    public User(String username, String email, String steamAccountName, String steamAccountId) {
-        this.username = username;
-        this.email = email;
-        this.steamAccountName = steamAccountName;
-        this.steamAccountId = steamAccountId;
-        // TODO: initialize friends list and competitions list.
+    public Set<Competition> getCompetitions() { return Set.copyOf(competitions); }
+
+    public boolean joinCompetition(Competition c) {
+        c.addCompetitor(this);          // owning side: this is what gets saved
+        return competitions.add(c);
     }
-    
-    
+
+    public boolean leaveCompetition(Competition c) {
+        c.removeCompetitor(this);
+        return competitions.remove(c);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || (o instanceof User other && uuid != null && uuid.equals(other.getUuid()));
+    }
+
+    @Override
+    public int hashCode() { return Objects.hashCode(uuid); }
 }

@@ -1,4 +1,4 @@
-package ds454.locomotive.userapi;
+package ds454.locomotive.competition;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
