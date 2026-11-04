@@ -10,6 +10,7 @@
             "envFile": [
                 "${workspaceFolder}/local-dev/env/competition/competition.env",
                 "${workspaceFolder}/local-dev/env/competition/db.env",
+                "${workspaceFolder}/local-dev/env/common.env",
             ]
         }
     ]

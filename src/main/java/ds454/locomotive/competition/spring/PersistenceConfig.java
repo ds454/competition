@@ -1,4 +1,4 @@
-package ds454.locomotive.competition.dbconnection;
+package ds454.locomotive.competition.spring;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -74,8 +74,13 @@ public class PersistenceConfig {
         em.setJpaVendorAdapter(vendorAdapter);
 
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update"); // Automatically updates table schemas
+        // Automatically updates table schemas
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+
+        // Use postgresql
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+
+        // Log generated SQL queries
         properties.setProperty("hibernate.show_sql", "true");
         em.setJpaProperties(properties);
 

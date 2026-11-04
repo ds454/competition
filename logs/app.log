@@ -69,3 +69,106 @@
 2026-11-04 03:49:46 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
 2026-11-04 03:49:46 [main] WARN  o.s.c.a.AnnotationConfigApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'competitionRepository' defined in ds454.locomotive.competition.repository.CompetitionRepository defined in @EnableJpaRepositories declared on PersistenceConfig: Query validation failed for 'SELECT comp FROM competition c JOIN c.comp_uuid'
 2026-11-04 03:49:46 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04 18:01:34 [main] INFO  ds454.locomotive.competition.Main - Starting Competition service...
+2026-11-04 18:01:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-04 18:01:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 35 ms. Found 2 JPA repository interfaces.
+2026-11-04 18:01:35 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-04 18:01:35 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 7.1.0.Final
+2026-11-04 18:01:35 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-04 18:01:35 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-04 18:01:35 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://competition-db:5432/competition]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.6
+	Default catalog/schema: competition/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-04 18:01:36 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-04 18:01:36 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04 18:01:36 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-04 18:01:36 [main] INFO  ds454.locomotive.competition.Main - Starting gRPC server on port 50051
+2026-11-04 18:02:27 [main] INFO  ds454.locomotive.competition.Main - Starting Competition service...
+2026-11-04 18:02:27 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-04 18:02:27 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 33 ms. Found 2 JPA repository interfaces.
+2026-11-04 18:02:27 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-04 18:02:27 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 7.1.0.Final
+2026-11-04 18:02:27 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-04 18:02:28 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-04 18:02:28 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://competition-db:5432/competition]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.6
+	Default catalog/schema: competition/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-04 18:02:28 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-04 18:02:28 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04 18:02:28 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-04 18:02:28 [main] INFO  ds454.locomotive.competition.Main - Starting gRPC server on port 50051
+2026-11-04 18:02:28 [main] INFO  ds454.locomotive.competition.Main - gRPC server started.
+2026-11-04 18:04:38 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:04:58 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:05:03 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:05:57 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:06:34 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:08:04 [main] INFO  ds454.locomotive.competition.Main - Starting Competition service...
+2026-11-04 18:08:04 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-04 18:08:04 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 37 ms. Found 2 JPA repository interfaces.
+2026-11-04 18:08:04 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-04 18:08:04 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 7.1.0.Final
+2026-11-04 18:08:04 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-04 18:08:05 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-04 18:08:05 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://competition-db:5432/competition]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.6
+	Default catalog/schema: competition/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-04 18:08:05 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-04 18:08:05 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04 18:08:05 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-04 18:08:05 [main] INFO  ds454.locomotive.competition.Main - Starting gRPC server on port 50051
+2026-11-04 18:08:06 [main] INFO  ds454.locomotive.competition.Main - gRPC server started.
+2026-11-04 18:08:08 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:57:59 [main] INFO  ds454.locomotive.competition.Main - Starting Competition service...
+2026-11-04 18:57:59 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-04 18:57:59 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 33 ms. Found 2 JPA repository interfaces.
+2026-11-04 18:57:59 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-11-04 18:57:59 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 7.1.0.Final
+2026-11-04 18:58:00 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-04 18:58:00 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-04 18:58:00 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://competition-db:5432/competition]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.6
+	Default catalog/schema: competition/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-04 18:58:00 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-04 18:58:01 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04 18:58:01 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-04 18:58:01 [main] INFO  ds454.locomotive.competition.Main - Starting gRPC server on port 50051
+2026-11-04 18:58:01 [main] INFO  ds454.locomotive.competition.Main - gRPC server started.
+2026-11-04 18:58:31 [grpc-default-executor-0] INFO  d.l.c.service.CompetitionService - It works!
+2026-11-04 18:58:31 [grpc-default-executor-0] ERROR d.l.c.grpc.CompetitionGrpcService - Impossible state reached

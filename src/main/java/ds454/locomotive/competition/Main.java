@@ -2,12 +2,15 @@ package ds454.locomotive.competition;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import ds454.locomotive.competition.dbconnection.RepositoryProvider;
+import ds454.locomotive.competition.grpc.CompetitionGrpcService;
+import ds454.locomotive.competition.grpc.UserUuidInterceptor;
+import ds454.locomotive.competition.spring.BeanProvider;
 
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
@@ -18,12 +21,13 @@ public class Main {
         log.info("Starting Competition service...");
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("ds454.locomotive.competition");
-        RepositoryProvider.setContext(context);
+        BeanProvider.setContext(context);
 
         log.info("Starting gRPC server on port " + Main.grpcPort);
         Server s;
 
         s = ServerBuilder.forPort(Main.grpcPort)
+                .addService(ServerInterceptors.intercept(new CompetitionGrpcService(), new UserUuidInterceptor()))
                 .build()
                 .start();
         log.info("gRPC server started.");
