@@ -23,6 +23,8 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
         var svcResult = compService.makeCompetition(UserUuidInterceptor.UserUuid.get(), request);
         if (svcResult == null) {
             log.error("Impossible state reached");
+            responseObserver.onNext(result.build());
+            responseObserver.onCompleted();
             return;
         }
 
