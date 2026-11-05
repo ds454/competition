@@ -25,7 +25,8 @@
                 "ms-azuretools.vscode-containers@2.5.2",
                 "drblury.protobuf-vsc@1.6.15",
                 "redhat.vscode-xml@0.29.3",
-                "nicolasvuillamy.vscode-groovy-lint@4.2.1"
+                "nicolasvuillamy.vscode-groovy-lint@4.2.1",
+                "mongodb.mongodb-vscode@1.18.0"
             ]
         }
     }

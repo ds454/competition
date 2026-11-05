@@ -18,7 +18,7 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
     @Override
     public void makeCompetition(MakeCompetitionRequest request,
             StreamObserver<MakeCompetitionResponse> responseObserver) {
-        log.debug("Received make competition request");
+        log.info("Received make competition request");
         var result = MakeCompetitionResponse.newBuilder();
         var svcResult = compService.makeCompetition(UserUuidInterceptor.UserUuid.get(), request);
         if (svcResult == null) {
@@ -47,5 +47,6 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
     public void getCompetitions(GetCompetitionsRequest request,
             StreamObserver<GetCompetitionsResponse> responseObserver) {
         log.debug("Received get competitions request");
+
     }
 }
