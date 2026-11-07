@@ -1,14 +1,18 @@
 package ds454.locomotive.competition.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import ds454.locomotive.competition.model.CompetitionInvitation;
 import ds454.locomotive.competition.model.User;
 import ds454.locomotive.competition.repository.CompetitionRepository;
 import ds454.locomotive.competition.util.Result;
@@ -24,6 +28,10 @@ public class CompetitionService {
     private static final int compNameMaxLen = Integer.valueOf(System.getenv("COMPETITION_NAME_MAX_LEN"));
     private static final int compMinLen = Integer.valueOf(System.getenv("COMPETITION_MIN_LEN_SEC"));
     private static final int compMaxLen = Integer.valueOf(System.getenv("COMPETITION_MAX_LEN_SEC"));
+
+    // 0 if a user can only accept competitions that have yet to start
+    // 1 if a user can accept competitions that have already started
+    private static final int acceptInvitationCondition = Integer.valueOf(System.getenv("ACCEPT_INVITATION_CONDITION"));
 
     private final CompetitionRepository compRepo;
 
@@ -57,15 +65,61 @@ public class CompetitionService {
         return new Result.Success<>(result);
     }
 
-    public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitions(String uuid, GetCompetitionsRequest request) {
+    public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitions(String uuid,
+            GetCompetitionsRequest request) {
         log.debug("Getting competitions for user {}", uuid);
 
         List<ds454.locomotive.competition.model.Competition> modelCompetitions = compRepo.findByCompetitorsUuid(uuid);
-        
-        if (modelCompetitions.isEmpty()) log.debug("User {} is not in any competitions", uuid);
-        else log.debug("User {} is in {} competitions", uuid, modelCompetitions.size());
+
+        if (modelCompetitions.isEmpty())
+            log.debug("User {} is not in any competitions", uuid);
+        else
+            log.debug("User {} is in {} competitions", uuid, modelCompetitions.size());
 
         var grpcCompetitions = modelCompetitions.stream().map(CompetitionService::modelToGrpc).toList();
+
+        return grpcCompetitions;
+    }
+
+    public Optional<Problem> inviteUserToCompetition(String requesterUuid, String inviteeUuid, String competitionId) {
+        // Get the referenced competition
+        var competitionFromDb = compRepo.findById(UUID.fromString(competitionId));
+        if (competitionFromDb.isEmpty()) {
+            log.debug("Competition id {} does not exist", competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.CompetitionDoesNotExist).build());
+        }
+        var competition = competitionFromDb.get();
+
+        // Check to make sure the requester is the host
+        if (!competition.getHost().getUuid().equals(requesterUuid)) {
+            log.debug("Requester {} does not have invitation permissions for competition id {}", requesterUuid,
+                    competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.InsufficientPermissions).build());
+        }
+
+        // Make sure the invitee isn't already in the competition
+        if (competition.getCompetitors().contains(new User(inviteeUuid, "none"))) {
+            log.debug("User {} is already in competition id {}", inviteeUuid, competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.RequestAllReadySent).build());
+        }
+
+        // Make sure the invitee hasn't already been invited
+        if (competition.getInvitations().contains(new CompetitionInvitation(inviteeUuid))) {
+            log.debug("User {} already invited to competition id {}", inviteeUuid, competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.RequestAllReadySent).build());
+        }
+
+        // Invite the user
+        compRepo.inviteUserToCompetition(UUID.fromString(competitionId), inviteeUuid, Instant.now().getEpochSecond());
+
+        return Optional.empty();
+    }
+
+    public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitionInvites(String requesterUuid) {
+        var competitions = compRepo.getInvitations(requesterUuid);
+        log.debug("User {} has {} invitations", requesterUuid, competitions.size());
+
+        var grpcCompetitions = competitions.stream().map(CompetitionService::modelToGrpc).toList();
 
         return grpcCompetitions;
     }
@@ -119,7 +173,8 @@ public class CompetitionService {
         return Problem.newBuilder().setProblem(ProblemType.InvalidInput).setField(field).setMessage(message).build();
     }
 
-    private static ds454.locomotive.generated.grpc.competition.Competition modelToGrpc(ds454.locomotive.competition.model.Competition comp) {
+    private static ds454.locomotive.generated.grpc.competition.Competition modelToGrpc(
+            ds454.locomotive.competition.model.Competition comp) {
 
         return ds454.locomotive.generated.grpc.competition.Competition
                 .newBuilder()
@@ -131,7 +186,8 @@ public class CompetitionService {
                 .setEndTime(comp.getEndTime())
                 .addAllCompetitorUuids(comp.getCompetitors().stream().map((user) -> {
                     // Impossible
-                    if (user.getUuid() == null) throw new IllegalStateException();
+                    if (user.getUuid() == null)
+                        throw new IllegalStateException();
                     return user.getUuid();
                 }).toList())
                 .build();

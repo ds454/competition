@@ -20,7 +20,8 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
             StreamObserver<MakeCompetitionResponse> responseObserver) {
         log.info("Received make competition request");
         var result = MakeCompetitionResponse.newBuilder();
-        var svcResult = compService.makeCompetition(HeaderInterceptor.UserUuid.get(), HeaderInterceptor.SteamId.get(), request);
+        var svcResult = compService.makeCompetition(HeaderInterceptor.UserUuid.get(), HeaderInterceptor.SteamId.get(),
+                request);
 
         switch (svcResult) {
             case Result.Success(Competition comp) -> {
@@ -46,6 +47,49 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
         var scvResult = compService.getCompetitions(HeaderInterceptor.UserUuid.get(), request);
 
         result.addAllCompetitions(scvResult);
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void inviteUserToCompetition(InviteUserToCompetitionRequest request,
+            StreamObserver<InviteUserToCompetitionResponse> responseObserver) {
+        
+        log.debug("Receive inviteUserToCompetitionRequest");
+        var result = InviteUserToCompetitionResponse.newBuilder();
+
+        var svcResult = compService.inviteUserToCompetition(HeaderInterceptor.UserUuid.get(), request.getUuidToInvite(), request.getCompetitionUuid());
+
+        if (svcResult.isPresent()) {
+            result.setProblem(svcResult.get());
+        }
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getCompetitionInvitations(GetCompetitionInvitationsRequest request,
+            StreamObserver<GetCompetitionInvitationsResponse> responseObserver) {
+
+        log.debug("Receive getCompetitionInvitations request");
+        var result = GetCompetitionInvitationsResponse.newBuilder();
+
+        var svcResult = compService.getCompetitionInvites(HeaderInterceptor.UserUuid.get());
+
+        result.addAllCompetitions(svcResult);
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void handleCompetitionInvitation(HandleCompetitionInvitationRequest request,
+            StreamObserver<HandleCompetitionInvitationResponse> responseObserver) {
+
+        log.debug("Received handleCompetitionInvitation request");
+        var result = HandleCompetitionInvitationResponse.newBuilder();
 
         responseObserver.onNext(result.build());
         responseObserver.onCompleted();

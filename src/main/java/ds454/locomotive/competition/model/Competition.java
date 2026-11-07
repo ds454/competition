@@ -1,6 +1,7 @@
 package ds454.locomotive.competition.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,5 +42,15 @@ public class Competition {
 
         // The host also participates in the competition
         competitors.add(host);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Competition other && Objects.equals(uuid, other.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(uuid);
     }
 }
