@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import ds454.locomotive.competition.grpc.CompetitionGrpcService;
-import ds454.locomotive.competition.grpc.UserUuidInterceptor;
+import ds454.locomotive.competition.grpc.HeaderInterceptor;
 import ds454.locomotive.competition.spring.BeanProvider;
 
 public class Main {
@@ -27,7 +27,7 @@ public class Main {
         Server s;
 
         s = ServerBuilder.forPort(Main.grpcPort)
-                .addService(ServerInterceptors.intercept(new CompetitionGrpcService(), new UserUuidInterceptor()))
+                .addService(ServerInterceptors.intercept(new CompetitionGrpcService(), new HeaderInterceptor()))
                 .build()
                 .start();
         log.info("gRPC server started.");

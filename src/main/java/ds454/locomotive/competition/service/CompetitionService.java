@@ -1,6 +1,8 @@
 package ds454.locomotive.competition.service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -30,30 +32,42 @@ public class CompetitionService {
     }
 
     public Result<ds454.locomotive.generated.grpc.competition.Competition, ProblemsList> makeCompetition(String uuid,
+            String steamId,
             MakeCompetitionRequest request) {
 
         var compProblems = getCompetitionProblems(request);
         if (compProblems.isPresent()) {
-            return new Result.Failure<>(compProblems.get());
+            var problems = compProblems.get();
+            log.debug("Found {} problems with makeCompetition request", problems.getProblemsCount());
+            return new Result.Failure<>(problems);
         }
 
-        ds454.locomotive.competition.model.Competition newCompetition = new ds454.locomotive.competition.model.Competition(
-                request.getName(), request.getGameId(), new User(uuid, "todoaddsteamid"), request.getStartTime(),
+        log.debug("Making new competition model");
+        var newCompetition = new ds454.locomotive.competition.model.Competition(
+                request.getName(),
+                request.getGameId(),
+                new User(uuid, steamId),
+                request.getStartTime(),
                 request.getEndTime());
 
+        log.debug("Saving new competition model to db");
         var success = compRepo.save(newCompetition);
-        var result = Competition
-                .newBuilder()
-                .setId(success.getUuid().toString())
-                .setName(success.getName())
-                .setHostUserId(success.getHost().getUuid())
-                .setGameId(success.getGameId())
-                .setStartTime(success.getStartTime())
-                .setEndTime(success.getEndTime())
-                .addCompetitorUuids(uuid)
-                .build();
+        var result = modelToGrpc(success);
 
         return new Result.Success<>(result);
+    }
+
+    public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitions(String uuid, GetCompetitionsRequest request) {
+        log.debug("Getting competitions for user {}", uuid);
+
+        List<ds454.locomotive.competition.model.Competition> modelCompetitions = compRepo.findByCompetitorsUuid(uuid);
+        
+        if (modelCompetitions.isEmpty()) log.debug("User {} is not in any competitions", uuid);
+        else log.debug("User {} is in {} competitions", uuid, modelCompetitions.size());
+
+        var grpcCompetitions = modelCompetitions.stream().map(CompetitionService::modelToGrpc).toList();
+
+        return grpcCompetitions;
     }
 
     private Optional<ProblemsList> getCompetitionProblems(MakeCompetitionRequest request) {
@@ -103,5 +117,23 @@ public class CompetitionService {
 
     private Problem makeInvalidInput(String field, String message) {
         return Problem.newBuilder().setProblem(ProblemType.InvalidInput).setField(field).setMessage(message).build();
+    }
+
+    private static ds454.locomotive.generated.grpc.competition.Competition modelToGrpc(ds454.locomotive.competition.model.Competition comp) {
+
+        return ds454.locomotive.generated.grpc.competition.Competition
+                .newBuilder()
+                .setId(comp.getUuid().toString())
+                .setName(comp.getName())
+                .setHostUserId(comp.getHost().getUuid())
+                .setGameId(comp.getGameId())
+                .setStartTime(comp.getStartTime())
+                .setEndTime(comp.getEndTime())
+                .addAllCompetitorUuids(comp.getCompetitors().stream().map((user) -> {
+                    // Impossible
+                    if (user.getUuid() == null) throw new IllegalStateException();
+                    return user.getUuid();
+                }).toList())
+                .build();
     }
 }

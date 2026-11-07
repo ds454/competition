@@ -20,13 +20,7 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
             StreamObserver<MakeCompetitionResponse> responseObserver) {
         log.info("Received make competition request");
         var result = MakeCompetitionResponse.newBuilder();
-        var svcResult = compService.makeCompetition(UserUuidInterceptor.UserUuid.get(), request);
-        if (svcResult == null) {
-            log.error("Impossible state reached");
-            responseObserver.onNext(result.build());
-            responseObserver.onCompleted();
-            return;
-        }
+        var svcResult = compService.makeCompetition(HeaderInterceptor.UserUuid.get(), HeaderInterceptor.SteamId.get(), request);
 
         switch (svcResult) {
             case Result.Success(Competition comp) -> {
@@ -48,5 +42,12 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
             StreamObserver<GetCompetitionsResponse> responseObserver) {
         log.debug("Received get competitions request");
 
+        var result = GetCompetitionsResponse.newBuilder();
+        var scvResult = compService.getCompetitions(HeaderInterceptor.UserUuid.get(), request);
+
+        result.addAllCompetitions(scvResult);
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
     }
 }

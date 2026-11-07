@@ -11,4 +11,5 @@ import ds454.locomotive.competition.model.Competition;
 @Repository
 public interface CompetitionRepository extends MongoRepository<Competition, UUID> {
     List<Competition> findByCompetitorsUuid(String userUuid);
+    List<Competition> findByInvitationsUserUuid(String userUuid);
 }

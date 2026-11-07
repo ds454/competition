@@ -25,9 +25,11 @@ public class Competition {
     private Long startTime;
     private Long endTime;
 
+    private Set<CompetitionInvitation> invitations = new HashSet<>();
     private Set<User> competitors = new HashSet<>();
 
-    protected Competition() {}
+    protected Competition() {
+    }
 
     public Competition(String name, String gameId, User host, Long startTime, Long endTime) {
         this.uuid = UUID.randomUUID();
