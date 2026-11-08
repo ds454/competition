@@ -20,7 +20,9 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
             StreamObserver<MakeCompetitionResponse> responseObserver) {
         log.info("Received make competition request");
         var result = MakeCompetitionResponse.newBuilder();
-        var svcResult = compService.makeCompetition(HeaderInterceptor.UserUuid.get(), HeaderInterceptor.SteamId.get(),
+        var svcResult = compService.makeCompetition(
+                HeaderInterceptor.UserUuid.get(),
+                HeaderInterceptor.SteamId.get(),
                 request);
 
         switch (svcResult) {
@@ -44,7 +46,9 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
         log.debug("Received get competitions request");
 
         var result = GetCompetitionsResponse.newBuilder();
-        var scvResult = compService.getCompetitions(HeaderInterceptor.UserUuid.get(), request);
+        var scvResult = compService.getCompetitions(
+                HeaderInterceptor.UserUuid.get(),
+                request);
 
         result.addAllCompetitions(scvResult);
 
@@ -55,11 +59,14 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
     @Override
     public void inviteUserToCompetition(InviteUserToCompetitionRequest request,
             StreamObserver<InviteUserToCompetitionResponse> responseObserver) {
-        
+
         log.debug("Receive inviteUserToCompetitionRequest");
         var result = InviteUserToCompetitionResponse.newBuilder();
 
-        var svcResult = compService.inviteUserToCompetition(HeaderInterceptor.UserUuid.get(), request.getUuidToInvite(), request.getCompetitionUuid());
+        var svcResult = compService.inviteUserToCompetition(
+                HeaderInterceptor.UserUuid.get(),
+                request.getUuidToInvite(),
+                request.getCompetitionUuid());
 
         if (svcResult.isPresent()) {
             result.setProblem(svcResult.get());
@@ -90,6 +97,35 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
 
         log.debug("Received handleCompetitionInvitation request");
         var result = HandleCompetitionInvitationResponse.newBuilder();
+
+        var svcResult = compService.handleCompetitionInvitation(
+                request.getCompetitionId(),
+                HeaderInterceptor.UserUuid.get(),
+                HeaderInterceptor.SteamId.get(),
+                request.getAction());
+
+        if (svcResult.isPresent()) {
+            result.setProblem(svcResult.get());
+        }
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void cancelCompetition(CancelCompetitionRequest request,
+            StreamObserver<CancelCompetitionResponse> responseObserver) {
+
+        log.debug("Received cancelCompetition request");
+        var result = CancelCompetitionResponse.newBuilder();
+
+        var svcResult = compService.cancelCompetition(
+                request.getCompetitionId(),
+                HeaderInterceptor.UserUuid.get());
+
+        if (svcResult.isPresent()) {
+            result.setProblem(svcResult.get());
+        }
 
         responseObserver.onNext(result.build());
         responseObserver.onCompleted();

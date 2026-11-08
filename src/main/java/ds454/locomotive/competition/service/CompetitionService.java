@@ -7,10 +7,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import ds454.locomotive.competition.model.CompetitionInvitation;
 import ds454.locomotive.competition.model.User;
@@ -122,6 +119,89 @@ public class CompetitionService {
         var grpcCompetitions = competitions.stream().map(CompetitionService::modelToGrpc).toList();
 
         return grpcCompetitions;
+    }
+
+    public Optional<Problem> handleCompetitionInvitation(
+            String competitionId, String inviteeUuid, String inviteeSteamid, HandleCompetitionAction action) {
+
+        var now = Instant.now().getEpochSecond();
+
+        // Get the competition
+        var repoCompetition = compRepo.findById(UUID.fromString(competitionId));
+        if (repoCompetition.isEmpty()) {
+            log.debug("Competition {} does not exist", competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.CompetitionDoesNotExist).build());
+        }
+        var competition = repoCompetition.get();
+
+        // Make sure the user is actually invited
+        if (!competition.getInvitations().contains(new CompetitionInvitation(inviteeUuid))) {
+            log.debug("User {} is not invited to competition {}", inviteeUuid, competitionId);
+            return Optional.of(
+                    Problem.newBuilder().setProblem(ProblemType.UserNotInvitedToCompetition).build());
+        }
+
+        // Check that we can still accept the invitation
+        switch (acceptInvitationCondition) {
+            // 0 if a user can only accept competitions that have yet to start
+            case 0:
+                // If the competition has already started
+                if (competition.getStartTime() < now)
+                    return Optional.of(
+                            Problem.newBuilder().setProblem(ProblemType.CompetitionAlreadyStarted).build());
+                break;
+
+            // 1 if a user can accept competitions that have already started, but not ended.
+            case 1:
+                if (competition.getEndTime() < now)
+                    return Optional.of(
+                            Problem.newBuilder().setProblem(ProblemType.CompetitionAlreadyEnded).build());
+                break;
+
+            default:
+                log.error("Invalid acceptInvitationCondition option. Must be 0 or 1.");
+                return Optional.of(Problem.newBuilder().setProblem(ProblemType.ServerError).build());
+        }
+
+        switch (action) {
+            // If we accept the invitation, remove the user from the invitations array and
+            // place them in the competitors array.
+            case Accept:
+                compRepo.acceptCompetitionInvitation(UUID.fromString(competitionId), inviteeUuid, inviteeSteamid);
+                return Optional.empty();
+
+            // If we decline the invitation, just remove the user from the invitations
+            // array.
+            case Decline:
+                compRepo.declineCompetitionInvitation(UUID.fromString(competitionId), inviteeUuid);
+                return Optional.empty();
+
+            default:
+            case UNRECOGNIZED:
+                log.error("Received competition invitation action {}, which is unrecognized.", action);
+                return Optional.of(Problem.newBuilder().setProblem(ProblemType.ServerError).build());
+        }
+
+    }
+
+    public Optional<Problem> cancelCompetition(String competitionId, String userUuid) {
+        var repoComp = compRepo.findById(UUID.fromString(competitionId));
+        if (repoComp.isEmpty()) {
+            log.debug("Competition {} does not exist", competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.CompetitionDoesNotExist).build());
+        }
+        var competition = repoComp.get();
+
+        // Check to make sure the user is the host
+        if (!competition.getHost().getUuid().equals(userUuid)) {
+            log.debug("User {} is not the host of competition {}, and cannot cancel it.", userUuid, competitionId);
+            return Optional.of(Problem.newBuilder().setProblem(ProblemType.InsufficientPermissions).build());
+        }
+
+        // Delete/Cancel the competition
+        compRepo.deleteById(UUID.fromString(competitionId));
+
+        return Optional.empty();
     }
 
     private Optional<ProblemsList> getCompetitionProblems(MakeCompetitionRequest request) {
