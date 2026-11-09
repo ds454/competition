@@ -14,18 +14,18 @@ import ds454.locomotive.competition.model.Competition;
 public interface CompetitionRepository extends MongoRepository<Competition, UUID> {
     List<Competition> findByCompetitorsUuid(String userUuid);
 
-    @Query("{ 'invitations.userUuid' : { $eq: ?0 } }")
+    @Query("{ 'invitations.userUuid': { $eq: ?0 } }")
     List<Competition> getInvitations(String userUuid);
 
     // Get documents with the matching uuid and that don't have any invitations that
     // match the second argument...
-    @Query("{ uuid : ?0, invitations.userUuid: { $ne: ?1 } }")
+    @Query("{ 'uuid': ?0, 'invitations.userUuid': { $ne: ?1 } }")
     // ...then add the userUuid and invite time to the array.
-    @Update("{ $push : { invitations: { userUuid: ?1, requestSentTimestamp: ?2 } }}")
+    @Update("{ $push : { 'invitations': { 'userUuid': ?1, 'requestSentTimestamp': ?2 } }}")
     void inviteUserToCompetition(UUID competitionId, String userUuid, Long inviteTime);
 
-    @Query("{ 'uuid' : ?0 }")
-    @Update("{ $pull : {'invitations': {'userUuid': ?1} } }")
+    @Query("{ 'uuid': ?0 }")
+    @Update("{ $pull: {'invitations': {'userUuid': ?1} } }")
     void declineCompetitionInvitation(UUID competitionId, String inviteeUuid);
 
     @Query("{ 'uuid': ?0, 'invitations.userUuid': { $eq: ?1 } }")
