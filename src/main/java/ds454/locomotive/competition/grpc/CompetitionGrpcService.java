@@ -1,5 +1,7 @@
 package ds454.locomotive.competition.grpc;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +9,7 @@ import ds454.locomotive.competition.service.CompetitionService;
 import ds454.locomotive.competition.spring.BeanProvider;
 import ds454.locomotive.competition.util.Result;
 import ds454.locomotive.generated.grpc.competition.*;
+import ds454.locomotive.generated.grpc.problem.Problem;
 import ds454.locomotive.generated.grpc.problem.ProblemsList;
 import io.grpc.stub.StreamObserver;
 
@@ -51,6 +54,21 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
                 request);
 
         result.addAllCompetitions(scvResult);
+
+        responseObserver.onNext(result.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getCompetitionPendingInvitations(GetCompetitionPendingInvitationsRequest request,
+            StreamObserver<GetCompetitionPendingInvitationsResponse> responseObserver) {
+
+        var result = GetCompetitionPendingInvitationsResponse.newBuilder();
+        var svcResult = compService.getPendingInvitationsForCompetition(HeaderInterceptor.UserUuid.get(), request);
+        switch (svcResult) {
+            case Result.Success(List<String> pendingInvites) -> result.setPendingInvitations(PendingCompetitionInvitations.newBuilder().addAllUuids(pendingInvites).build());
+            case Result.Failure(Problem problem) -> result.setProblem(problem);
+        }
 
         responseObserver.onNext(result.build());
         responseObserver.onCompleted();

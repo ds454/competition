@@ -58,13 +58,13 @@ public class CompetitionService {
                 request.getEndTime());
 
         newCompetition
-            .getInvitations()
-            .addAll(
-                request
-                    .getOtherCompetitorsList()
-                    .stream()
-                    .map(otherCompetitor -> new CompetitionInvitation(otherCompetitor, now))
-                    .toList());
+                .getInvitations()
+                .addAll(
+                        request
+                                .getOtherCompetitorsList()
+                                .stream()
+                                .map(otherCompetitor -> new CompetitionInvitation(otherCompetitor, now))
+                                .toList());
 
         log.debug("Saving new competition model to db");
         var success = compRepo.save(newCompetition);
@@ -89,6 +89,30 @@ public class CompetitionService {
         return grpcCompetitions;
     }
 
+    public Result<List<String>, Problem> getPendingInvitationsForCompetition(String requesterUuid,
+            GetCompetitionPendingInvitationsRequest request) {
+
+        // Make sure the competition exists
+        var repoCompetition = compRepo.findById(UUID.fromString(request.getCompetitionUuid()));
+        if (repoCompetition.isEmpty()) {
+            return new Result.Failure<>(Problem.newBuilder().setProblem(ProblemType.CompetitionDoesNotExist)
+                    .setField("competition_uuid").setMessage("This competition does not exist").build());
+        }
+
+        // Make sure the requester is the host of the competition
+        var competition = repoCompetition.get();
+        if (!competition.getHost().getUuid().equals(requesterUuid)) {
+            return new Result.Failure<>(Problem.newBuilder().setProblem(ProblemType.InsufficientPermissions)
+                    .setField("uuid").setMessage("Insufficient Permissions").build());
+        }
+
+        return new Result.Success<List<String>, Problem>(
+                competition
+                        .getInvitations()
+                        .stream()
+                        .map(t -> t.getUserUuid())
+                        .toList());
+    }
 
     public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitionInvites(String requesterUuid) {
         var competitions = compRepo.getInvitations(requesterUuid);
