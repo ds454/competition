@@ -19,9 +19,13 @@ public class CompetitionInvitation {
     protected CompetitionInvitation() {
     }
 
-    public CompetitionInvitation(String userUuid) {
+    public CompetitionInvitation(String userUuid, long timestamp) {
         this.userUuid = userUuid;
-        this.requestSentTimestamp = Instant.now().getEpochSecond();
+        this.requestSentTimestamp = timestamp;
+    }
+
+    public CompetitionInvitation(String userUuid) {
+        this(userUuid, Instant.now().getEpochSecond());
     }
 
     @Override

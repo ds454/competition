@@ -47,6 +47,8 @@ public class CompetitionService {
             return new Result.Failure<>(problems);
         }
 
+        var now = Instant.now().getEpochSecond();
+
         log.debug("Making new competition model");
         var newCompetition = new ds454.locomotive.competition.model.Competition(
                 request.getName(),
@@ -54,6 +56,15 @@ public class CompetitionService {
                 new User(uuid, steamId),
                 request.getStartTime(),
                 request.getEndTime());
+
+        newCompetition
+            .getInvitations()
+            .addAll(
+                request
+                    .getOtherCompetitorsList()
+                    .stream()
+                    .map(otherCompetitor -> new CompetitionInvitation(otherCompetitor, now))
+                    .toList());
 
         log.debug("Saving new competition model to db");
         var success = compRepo.save(newCompetition);
@@ -78,39 +89,6 @@ public class CompetitionService {
         return grpcCompetitions;
     }
 
-    public Optional<Problem> inviteUserToCompetition(String requesterUuid, String inviteeUuid, String competitionId) {
-        // Get the referenced competition
-        var competitionFromDb = compRepo.findById(UUID.fromString(competitionId));
-        if (competitionFromDb.isEmpty()) {
-            log.debug("Competition id {} does not exist", competitionId);
-            return Optional.of(Problem.newBuilder().setProblem(ProblemType.CompetitionDoesNotExist).build());
-        }
-        var competition = competitionFromDb.get();
-
-        // Check to make sure the requester is the host
-        if (!competition.getHost().getUuid().equals(requesterUuid)) {
-            log.debug("Requester {} does not have invitation permissions for competition id {}", requesterUuid,
-                    competitionId);
-            return Optional.of(Problem.newBuilder().setProblem(ProblemType.InsufficientPermissions).build());
-        }
-
-        // Make sure the invitee isn't already in the competition
-        if (competition.getCompetitors().contains(new User(inviteeUuid, "none"))) {
-            log.debug("User {} is already in competition id {}", inviteeUuid, competitionId);
-            return Optional.of(Problem.newBuilder().setProblem(ProblemType.RequestAllReadySent).build());
-        }
-
-        // Make sure the invitee hasn't already been invited
-        if (competition.getInvitations().contains(new CompetitionInvitation(inviteeUuid))) {
-            log.debug("User {} already invited to competition id {}", inviteeUuid, competitionId);
-            return Optional.of(Problem.newBuilder().setProblem(ProblemType.RequestAllReadySent).build());
-        }
-
-        // Invite the user
-        compRepo.inviteUserToCompetition(UUID.fromString(competitionId), inviteeUuid, Instant.now().getEpochSecond());
-
-        return Optional.empty();
-    }
 
     public List<ds454.locomotive.generated.grpc.competition.Competition> getCompetitionInvites(String requesterUuid) {
         var competitions = compRepo.getInvitations(requesterUuid);

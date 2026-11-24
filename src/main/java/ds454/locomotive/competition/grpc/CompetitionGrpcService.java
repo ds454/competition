@@ -57,26 +57,6 @@ public class CompetitionGrpcService extends CompetitionServiceGrpc.CompetitionSe
     }
 
     @Override
-    public void inviteUserToCompetition(InviteUserToCompetitionRequest request,
-            StreamObserver<InviteUserToCompetitionResponse> responseObserver) {
-
-        log.debug("Receive inviteUserToCompetitionRequest");
-        var result = InviteUserToCompetitionResponse.newBuilder();
-
-        var svcResult = compService.inviteUserToCompetition(
-                HeaderInterceptor.UserUuid.get(),
-                request.getUuidToInvite(),
-                request.getCompetitionUuid());
-
-        if (svcResult.isPresent()) {
-            result.setProblem(svcResult.get());
-        }
-
-        responseObserver.onNext(result.build());
-        responseObserver.onCompleted();
-    }
-
-    @Override
     public void getCompetitionInvitations(GetCompetitionInvitationsRequest request,
             StreamObserver<GetCompetitionInvitationsResponse> responseObserver) {
 

@@ -29,6 +29,9 @@ public class Competition {
     private Set<CompetitionInvitation> invitations = new HashSet<>();
     private Set<User> competitors = new HashSet<>();
 
+    private Long lastRefresh;
+    private Boolean refreshing;
+
     protected Competition() {
     }
 
@@ -42,6 +45,9 @@ public class Competition {
 
         // The host also participates in the competition
         competitors.add(host);
+
+        lastRefresh = null;
+        refreshing = false;
     }
 
     @Override
